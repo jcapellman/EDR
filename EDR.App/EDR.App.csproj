@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="WET.lib" Version="0.9.4" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\EDR.lib\EDR.lib.csproj" />
   </ItemGroup>
 
