@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32422.2
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EDR.App", "EDR.App\EDR.App.csproj", "{C9530E3F-D621-4F6C-8685-99731B5F7F73}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EDR.Collector.App", "EDR.Collector.App\EDR.Collector.App.csproj", "{C9530E3F-D621-4F6C-8685-99731B5F7F73}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EDR.lib", "EDR.lib\EDR.lib.csproj", "{54189330-C4C2-4349-92AC-9E1C46CDC603}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EDR.Collector.lib", "EDR.Collector.lib\EDR.Collector.lib.csproj", "{54189330-C4C2-4349-92AC-9E1C46CDC603}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
