@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EDR.lib\EDR.lib.csproj" />
+    <ProjectReference Include="..\EDR.lib\EDR.Collector.lib.csproj" />
   </ItemGroup>
 
 </Project>
