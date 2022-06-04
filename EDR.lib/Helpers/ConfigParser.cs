@@ -1,12 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using EDR.Collector.lib.Objects;
 
-namespace EDR.lib.Helpers
+using System.Text.Json;
+
+namespace EDR.Collector.lib.Helpers
 {
-    internal class ConfigParser
+    public class ConfigParser
     {
+        public static Config LoadConfig(string? fileName = null)
+        {
+            if (string.IsNullOrEmpty(fileName))
+            {
+                return new Config();
+            }
+
+            if (!File.Exists(fileName))
+            {
+                return new Config();
+            }
+
+            var json = File.ReadAllText(fileName);
+
+            if (string.IsNullOrEmpty(json))
+            {
+                return new Config();
+            }
+
+            var config = JsonSerializer.Deserialize<Config>(json);
+
+            if (config == null)
+            {
+                config = new Config();
+            }
+
+            return config;
+        }
     }
 }
