@@ -1,9 +1,18 @@
-﻿namespace EDR.lib.Objects
+﻿namespace EDR.Collector.lib.Objects
 {
     public class Config
     {
-        public string ConnectorType { get; set; }
+        public string StorageType { get; set; }
 
-        public string ConnectorJSONConfig { get; set; }
+        public string StorageTypeConfig { get; set; }
+
+        public bool EnableStdOutToConsole { get; set; }
+
+        public string OutputFormat { get; set; }
+
+        public Config()
+        {
+            EnableStdOutToConsole = true;
+        }
     }
 }
