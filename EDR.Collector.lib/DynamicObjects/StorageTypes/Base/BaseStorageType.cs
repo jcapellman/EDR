@@ -6,6 +6,6 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes.Base
     {
         public abstract bool Initialize(string configStr);
 
-        public abstract bool StoreEvent(string output);
+        public abstract Task<bool> StoreEventAsync(string output);
     }
 }
