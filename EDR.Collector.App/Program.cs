@@ -1,5 +1,4 @@
 ﻿using EDR.Collector.lib;
-using EDR.Collector.lib.Helpers;
 
 namespace EDR.Collector.App
 {
@@ -9,7 +8,7 @@ namespace EDR.Collector.App
         {
             ManualResetEvent mreShutdown = new(false);
 
-            var collector = new CollectorRunner(ConfigParser.LoadConfig(args.Length == 0 ? null : args[0]));
+            var collector = new CollectorRunner();
 
             Console.CancelKeyPress += (sender, eventArgs) => {
                 eventArgs.Cancel = true;
