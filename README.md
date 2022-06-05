@@ -6,8 +6,8 @@ An open source project that might eventually be a complete EDR platform across W
 [![CodeQL](https://github.com/jcapellman/EDR/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/jcapellman/EDR/actions/workflows/codeql-analysis.yml)
 
 ## Development Items Remaining
-Unit Test Coverage
-Logging
-Abstractions for different operating systems
-Local Storage Support
-GitHub Action Release Packaging
+* Unit Test Coverage
+* Logging
+* Abstractions for different operating systems
+* Local Storage Support
+* GitHub Action Release Packaging
