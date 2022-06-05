@@ -1,23 +1,72 @@
-﻿using EDR.Collector.lib.DynamicObjects.StorageTypes.Base;
+﻿using Amazon.S3;
+using Amazon.S3.Model;
+
+using EDR.Collector.lib.DynamicObjects.StorageTypes.Base;
+
+using System.Text.Json;
 
 namespace EDR.Collector.lib.DynamicObjects.StorageTypes
 {
     public class AWSS3Storage : BaseStorageType
     {
+        public class AWSConfig
+        {
+            public Amazon.RegionEndpoint Region { get; set; }
+
+            public string BucketName { get; set; }
+
+            public string Key { get; set; }
+
+            public string FilePath { get; set; }
+
+            public AWSConfig()
+            {
+                Region = Amazon.RegionEndpoint.USEast1;
+
+                BucketName = string.Empty;
+
+                Key = string.Empty;
+
+                FilePath = string.Empty;
+            }
+        }
+
+        private AWSConfig _config = new();
+
         public override string Name => "AWS S3";
 
         public override bool Initialize(string configStr)
         {
-            //TODO: Initialize the S3 connector
+            if (string.IsNullOrEmpty(configStr))
+            {
+                return false;
+            }
+
+            _config = JsonSerializer.Deserialize<AWSConfig>(configStr);
+
+            if (_config == null)
+            {
+                return false;
+            }
 
             return true;
         }
 
-        public override bool StoreEvent(string output)
+        public override async Task<bool> StoreEventAsync(string output)
         {
-            //TODO: Actually store in an S3 bucket
+            var client = new AmazonS3Client(_config.Region);
 
-            return true;
+            PutObjectRequest putRequest = new()
+            {
+                BucketName = _config.BucketName,
+                Key = _config.Key,
+                FilePath = _config.FilePath,
+                ContentType = "text/plain"
+            };
+
+            PutObjectResponse response = await client.PutObjectAsync(putRequest);
+
+            return response.HttpStatusCode == System.Net.HttpStatusCode.OK;
         }
     }
 }
