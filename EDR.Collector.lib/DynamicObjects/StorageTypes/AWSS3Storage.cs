@@ -4,6 +4,7 @@ using Amazon.S3.Model;
 using EDR.Collector.lib.DynamicObjects.StorageTypes.Base;
 
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace EDR.Collector.lib.DynamicObjects.StorageTypes
 {
@@ -29,6 +30,9 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
 
                 FilePath = string.Empty;
             }
+
+            [JsonConstructor]
+            public AWSConfig(Amazon.RegionEndpoint region, string bucketName, string key, string filePath) => (Region, BucketName, Key, FilePath) = (region, bucketName, key, filePath);
         }
 
         private AWSConfig _config = new();
@@ -42,12 +46,14 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
                 return false;
             }
 
-            _config = JsonSerializer.Deserialize<AWSConfig>(configStr);
+            var result = JsonSerializer.Deserialize<AWSConfig>(configStr);
 
-            if (_config == null)
+            if (result == null)
             {
                 return false;
             }
+
+            _config = result;
 
             return true;
         }
