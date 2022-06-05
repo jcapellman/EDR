@@ -41,7 +41,7 @@ namespace EDR.Collector.lib
 
             if (!initializeResult)
             {
-                throw new Exception($"Failed to initialize {storageType} - failing to start");
+                throw new TypeInitializationException(storageType, new Exception($"Failed to initialize {storageType} - failing to start"));
             }
 
             return storage;
