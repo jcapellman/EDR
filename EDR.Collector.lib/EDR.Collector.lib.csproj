@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="AWSSDK.S3" Version="3.7.9.11" />
+    <PackageReference Include="NLog" Version="5.0.0" />
     <PackageReference Include="WET.lib" Version="0.9.4" />
   </ItemGroup>
 
