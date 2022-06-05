@@ -6,7 +6,7 @@ namespace EDR.Collector.lib.Helpers
     {
         public static T? InitializeGeneric<T>(string objectName) where T : BaseDynamicObject
         {
-            var type = typeof(DynamicLoader).Assembly.GetTypes().FirstOrDefault(a => a == typeof(T) && a.Name == objectName && !a.IsAbstract);
+            var type = typeof(DynamicLoader).Assembly.GetTypes().FirstOrDefault(a => a.BaseType == typeof(T) && a.Name == objectName && !a.IsAbstract);
 
             if (type == null)
             {
