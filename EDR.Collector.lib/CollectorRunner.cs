@@ -1,4 +1,6 @@
-﻿using EDR.Collector.lib.Objects;
+﻿using EDR.Collector.lib.Common;
+using EDR.Collector.lib.Helpers;
+using EDR.Collector.lib.Objects;
 using EDR.Collector.lib.OutputFormatTypes;
 using EDR.Collector.lib.OutputTypes.Base;
 using EDR.Collector.lib.StorageTypes;
@@ -13,8 +15,12 @@ namespace EDR.Collector.lib
         private readonly Config _config;
         private readonly ETWMonitor _wet = new();
 
-        private BaseOutputFormatType _outputFormatter;
-        private BaseStorageType _storage;
+        private readonly BaseOutputFormatType _outputFormatter;
+        private readonly BaseStorageType _storage;
+
+        public CollectorRunner(string configFileName = Constants.DEFAULT_CONFIG_FILENAME) : this(ConfigParser.LoadConfig(configFileName))
+        {
+        }
 
         public CollectorRunner(Config config)
         {
