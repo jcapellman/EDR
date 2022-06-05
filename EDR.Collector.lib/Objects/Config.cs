@@ -1,4 +1,6 @@
-﻿namespace EDR.Collector.lib.Objects
+﻿using EDR.Collector.lib.Common;
+
+namespace EDR.Collector.lib.Objects
 {
     public class Config
     {
@@ -13,6 +15,12 @@
         public Config()
         {
             EnableStdOutToConsole = true;
+
+            StorageType = Constants.DEFAULT_CONFIG_STORAGETYPE;
+
+            OutputFormat = Constants.DEFAULT_CONFIG_OUTPUTFORMAT;
+
+            StorageTypeConfig = string.Empty;
         }
     }
 }
