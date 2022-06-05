@@ -41,12 +41,7 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
 
         public override bool Initialize(string configStr)
         {
-            if (string.IsNullOrEmpty(configStr))
-            {
-                return false;
-            }
-
-            var result = JsonSerializer.Deserialize<AWSConfig>(configStr);
+            var result = ParseJSON<AWSConfig>(configStr);
 
             if (result == null)
             {
