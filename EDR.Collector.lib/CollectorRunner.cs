@@ -37,7 +37,12 @@ namespace EDR.Collector.lib
         {
             var storage = DynamicLoader.InitializeGeneric<BaseStorageType>(storageType) ?? new AWSS3Storage();
 
-            storage.Initialize(storageTypeConfig);
+            var initializeResult = storage.Initialize(storageTypeConfig);
+
+            if (!initializeResult)
+            {
+                throw new Exception($"Failed to initialize {storageType} - failing to start");
+            }
 
             return storage;
         }
@@ -56,7 +61,7 @@ namespace EDR.Collector.lib
             _wet.Stop();
         }
 
-        private void Wet_OnEvent(object? sender, WET.lib.Containers.ETWEventContainerItem e)
+        private async void Wet_OnEvent(object? sender, WET.lib.Containers.ETWEventContainerItem e)
         {
             var outputStr = _outputFormatter.Format(e);
 
@@ -65,7 +70,7 @@ namespace EDR.Collector.lib
                 Console.WriteLine(outputStr);
             }
 
-            _storage.StoreEvent(outputStr);
+            await _storage.StoreEventAsync(outputStr);
         }
     }
 }
