@@ -18,18 +18,8 @@ namespace EDR.Collector.lib.Helpers
             return config;
         }
 
-        public static Config LoadConfig(string? fileName = null)
+        private static Config LoadConfigFile(string fileName)
         {
-            if (string.IsNullOrEmpty(fileName))
-            {
-                fileName = Constants.DEFAULT_CONFIG_FILENAME;
-            }
-
-            if (!File.Exists(fileName))
-            {
-                return CreateDefaultConfigFile(fileName);
-            }
-
             var json = File.ReadAllText(fileName);
 
             if (string.IsNullOrEmpty(json))
@@ -45,6 +35,21 @@ namespace EDR.Collector.lib.Helpers
             }
 
             return config;
+        }
+
+        public static Config LoadConfig(string? fileName = null)
+        {
+            if (string.IsNullOrEmpty(fileName))
+            {
+                fileName = Constants.DEFAULT_CONFIG_FILENAME;
+            }
+
+            if (!File.Exists(fileName))
+            {
+                return CreateDefaultConfigFile(fileName);
+            }
+
+            return LoadConfigFile(fileName);
         }
     }
 }
