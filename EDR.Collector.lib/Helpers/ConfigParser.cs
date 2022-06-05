@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace EDR.Collector.lib.Helpers
 {
-    public class ConfigParser
+    public static class ConfigParser
     {
         private static Config CreateDefaultConfigFile(string fileName = Constants.DEFAULT_CONFIG_FILENAME)
         {

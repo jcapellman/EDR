@@ -2,9 +2,9 @@
 
 namespace EDR.Collector.App
 {
-    internal class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             ManualResetEvent mreShutdown = new(false);
 
