@@ -15,8 +15,8 @@ namespace EDR.Collector.lib
         private readonly Config _config;
         private readonly ETWMonitor _wet = new();
 
-        private BaseOutputFormatType _outputFormatter;
-        private BaseStorageType _storage;
+        private readonly BaseOutputFormatType _outputFormatter;
+        private readonly BaseStorageType _storage;
 
         public CollectorRunner(string configFileName = Constants.DEFAULT_CONFIG_FILENAME) : this(ConfigParser.LoadConfig(configFileName))
         {
@@ -36,6 +36,8 @@ namespace EDR.Collector.lib
         private static BaseStorageType InitializeStorageType(string storageType, string storageTypeConfig)
         {
             var storage = DynamicLoader.InitializeGeneric<BaseStorageType>(storageType) ?? new AWSS3Storage();
+
+            storage.Initialize(storageTypeConfig);
 
             return storage;
         }
