@@ -1,10 +1,10 @@
 ﻿using EDR.Collector.lib.Common;
+using EDR.Collector.lib.DynamicObjects.OutputFormatTypes;
+using EDR.Collector.lib.DynamicObjects.OutputFormatTypes.Base;
+using EDR.Collector.lib.DynamicObjects.StorageTypes;
+using EDR.Collector.lib.DynamicObjects.StorageTypes.Base;
 using EDR.Collector.lib.Helpers;
 using EDR.Collector.lib.Objects;
-using EDR.Collector.lib.OutputFormatTypes;
-using EDR.Collector.lib.OutputTypes.Base;
-using EDR.Collector.lib.StorageTypes;
-using EDR.Collector.lib.StorageTypes.Base;
 
 using WET.lib;
 
@@ -15,8 +15,8 @@ namespace EDR.Collector.lib
         private readonly Config _config;
         private readonly ETWMonitor _wet = new();
 
-        private readonly BaseOutputFormatType _outputFormatter;
-        private readonly BaseStorageType _storage;
+        private BaseOutputFormatType _outputFormatter;
+        private BaseStorageType _storage;
 
         public CollectorRunner(string configFileName = Constants.DEFAULT_CONFIG_FILENAME) : this(ConfigParser.LoadConfig(configFileName))
         {
@@ -30,16 +30,14 @@ namespace EDR.Collector.lib
             _storage = InitializeStorageType(_config.StorageType, _config.StorageTypeConfig);
         }
 
-        private BaseOutputFormatType InitializeOutputFormat(string formatType)
-        {
-            // TODO: Use reflection to load output formatters and return
-            return new SysLog();
-        }
+        private static BaseOutputFormatType InitializeOutputFormat(string formatType) =>
+            DynamicLoader.InitializeGeneric<BaseOutputFormatType>(formatType) ?? new SysLog();
 
-        private BaseStorageType InitializeStorageType(string storageType, string storageTypeConfig)
+        private static BaseStorageType InitializeStorageType(string storageType, string storageTypeConfig)
         {
-            // TODO: Use reflection to load storage types and return
-            return new AWSS3Storage();
+            var storage = DynamicLoader.InitializeGeneric<BaseStorageType>(storageType) ?? new AWSS3Storage();
+
+            return storage;
         }
 
         public void Start()
