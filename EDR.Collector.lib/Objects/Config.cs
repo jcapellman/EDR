@@ -20,7 +20,7 @@ namespace EDR.Collector.lib.Objects
 
             OutputFormat = Constants.DEFAULT_CONFIG_OUTPUTFORMAT;
 
-            StorageTypeConfig = string.Empty;
+            StorageTypeConfig = Constants.DEFAULT_CONFIG_STORAGECONFIG;
         }
     }
 }
