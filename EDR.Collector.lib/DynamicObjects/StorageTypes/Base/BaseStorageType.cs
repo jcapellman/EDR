@@ -4,6 +4,8 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes.Base
 {
     public abstract class BaseStorageType : BaseDynamicObject
     {
+        public abstract bool Initialize(string configStr);
+
         public abstract bool StoreEvent(string output);
     }
 }
