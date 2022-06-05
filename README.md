@@ -9,5 +9,4 @@ An open source project that might eventually be a complete EDR platform across W
 * Unit Test Coverage
 * Logging
 * Abstractions for different operating systems
-* Local Storage Support
 * GitHub Action Release Packaging
