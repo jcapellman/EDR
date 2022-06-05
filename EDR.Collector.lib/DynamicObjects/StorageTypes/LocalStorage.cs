@@ -43,15 +43,14 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
             return true;
         }
 
-        public override async Task<bool> StoreEventAsync(string output)
+        public override Task<bool> StoreEventAsync(string output)
         {
-            locker.AcquireWriterLock(100);
+            lock (locker)
+            {
+                File.AppendAllText(CurrentFileName, output + System.Environment.NewLine);
+            }
 
-            await File.AppendAllTextAsync(CurrentFileName, output);
-
-            locker.ReleaseLock();
-
-            return true;
+            return Task.FromResult(true);
         }
     }
 }
