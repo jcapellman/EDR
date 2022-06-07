@@ -12,12 +12,14 @@ namespace EDR.Collector.lib
 {
     public class CollectorRunner
     {
+        private static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+
         private readonly Config _config;
         private readonly ETWMonitor _wet = new();
 
         private readonly BaseOutputFormatType _outputFormatter;
         private readonly BaseStorageType _storage;
-
+            
         public CollectorRunner(string configFileName = Constants.DEFAULT_CONFIG_FILENAME) : this(ConfigParser.LoadConfig(configFileName))
         {
         }
@@ -27,7 +29,12 @@ namespace EDR.Collector.lib
             _config = config;
 
             _outputFormatter = InitializeOutputFormat(_config.OutputFormat);
+
+            logger.Debug($"CollectorRunner: {_outputFormatter.Name} was initialized successfully");
+
             _storage = InitializeStorageType(_config.StorageType, _config.StorageTypeConfig);
+
+            logger.Debug($"CollectorRunner: {_storage.Name} was initialized successfully");
         }
 
         private static BaseOutputFormatType InitializeOutputFormat(string formatType) =>
@@ -69,6 +76,8 @@ namespace EDR.Collector.lib
             {
                 Console.WriteLine(outputStr);
             }
+
+            logger.Debug($"Wet_OnEvent: {outputStr}");
 
             await _storage.StoreEventAsync(outputStr);
         }
