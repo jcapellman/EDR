@@ -11,9 +11,15 @@ namespace EDR.Collector.lib.Helpers
         {
             var config = new Config();
 
-            var json = JsonSerializer.Serialize(config);
+            var serializeOptions = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            };
 
-            File.WriteAllText(fileName, json);
+            var json = JsonSerializer.Serialize(config, serializeOptions);
+
+            File.WriteAllText(fileName, json, System.Text.Encoding.ASCII);
 
             return config;
         }
