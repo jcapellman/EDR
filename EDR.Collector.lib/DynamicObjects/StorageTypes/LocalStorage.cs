@@ -14,6 +14,8 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
             }
         }
 
+        private static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+
         private LocalStorageConfig _config = new();
 
         public override string Name => "LocalStorage";
@@ -26,15 +28,21 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
         {
             if (string.IsNullOrWhiteSpace(configStr))
             {
+                logger.Debug("LocalStorage::Initialize - configStr parameter was null");
+
                 _config = new LocalStorageConfig();
 
                 return true;
             }
 
+            logger.Debug($"LocalStorage::Initialize - configStr parameter ({configStr})");
+
             var result = ParseJSON<LocalStorageConfig>(configStr);
 
             if (result == null)
             {
+                logger.Debug("LocalStorage::Initialize - JSON Parsing of configStr was null");
+
                 return false;
             }
 
@@ -47,6 +55,8 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
         {
             lock (locker)
             {
+                logger.Debug($"LocalStorage::StoreEventAsync - {output}");
+
                 File.AppendAllText(CurrentFileName, output + System.Environment.NewLine);
             }
 
