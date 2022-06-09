@@ -2,7 +2,7 @@
 
 namespace EDR.Collector.lib.DynamicObjects.StorageTypes
 {
-    internal class LocalStorage : BaseStorageType
+    public class LocalStorage : BaseStorageType
     {
         public class LocalStorageConfig
         {

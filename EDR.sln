@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EDR.Collector.App", "EDR.Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EDR.Collector.lib", "EDR.Collector.lib\EDR.Collector.lib.csproj", "{54189330-C4C2-4349-92AC-9E1C46CDC603}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EDR.Collector.UnitTest", "EDR.Collector.UnitTest\EDR.Collector.UnitTest.csproj", "{24AE5C78-73F2-4740-964B-280A4A44985C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{54189330-C4C2-4349-92AC-9E1C46CDC603}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{54189330-C4C2-4349-92AC-9E1C46CDC603}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{54189330-C4C2-4349-92AC-9E1C46CDC603}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24AE5C78-73F2-4740-964B-280A4A44985C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24AE5C78-73F2-4740-964B-280A4A44985C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24AE5C78-73F2-4740-964B-280A4A44985C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24AE5C78-73F2-4740-964B-280A4A44985C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
