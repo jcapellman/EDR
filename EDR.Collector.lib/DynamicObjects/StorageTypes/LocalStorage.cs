@@ -1,4 +1,5 @@
 ﻿using EDR.Collector.lib.DynamicObjects.StorageTypes.Base;
+using System.Text.Json;
 
 namespace EDR.Collector.lib.DynamicObjects.StorageTypes
 {
@@ -35,20 +36,28 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
                 return true;
             }
 
-            logger.Debug($"LocalStorage::Initialize - configStr parameter ({configStr})");
-
-            var result = ParseJSON<LocalStorageConfig>(configStr);
-
-            if (result == null)
+            try
             {
-                logger.Debug("LocalStorage::Initialize - JSON Parsing of configStr was null");
+                logger.Debug($"LocalStorage::Initialize - configStr parameter ({configStr})");
+
+                var result = ParseJSON<LocalStorageConfig>(configStr);
+
+                if (result == null)
+                {
+                    logger.Debug("LocalStorage::Initialize - JSON Parsing of configStr was null");
+
+                    return false;
+                }
+
+                _config = result;
+
+                return true;
+            } catch (JsonException jex)
+            {
+                logger.Error($"LocalStorage::Initialize: Failed to parse {configStr} with exception: {jex}");
 
                 return false;
             }
-
-            _config = result;
-
-            return true;
         }
 
         public override Task<bool> StoreEventAsync(string output)

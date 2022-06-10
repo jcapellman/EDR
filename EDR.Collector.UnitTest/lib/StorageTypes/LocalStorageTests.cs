@@ -14,5 +14,15 @@ namespace EDR.Collector.UnitTest.lib.StorageTypes
 
             Assert.IsTrue(result);
         }
+
+        [TestMethod]
+        public void GarbageInputCheck()
+        {
+            var localStorage = new LocalStorage();
+
+            var result = localStorage.Initialize("BabyYaga");
+
+            Assert.IsFalse(result);
+        }
     }
 }
