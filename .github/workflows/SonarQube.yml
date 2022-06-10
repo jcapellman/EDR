@@ -42,4 +42,10 @@ jobs:
         run: |
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"jcapellman_EDR_AYEz7aUo1XjYoLocacON" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}"
           dotnet build
+                    dotnet tool install --global dotnet-sonarscanner
+          dotnet tool update dotnet-reportgenerator-globaltool -g
+          
+          dotnet test .\EDR.Collector.UnitTest\EDR.Collector.UnitTest.csproj --no-build --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+          reportgenerator "-reports:*\EDR.Collector.UnitTest\TestResults\*\coverage.opencover.xml" "-targetdir:sonarqubecoverage" "-reporttypes:SonarQube"
+
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
