@@ -14,6 +14,6 @@ namespace EDR.Collector.lib.Common
 
         public const string DEFAULT_CONFIG_STORAGETYPE = nameof(LocalStorage);
 
-        public static string DEFAULT_CONFIG_STORAGECONFIG = JsonSerializer.Serialize(new LocalStorageConfig());
+        public readonly static string DEFAULT_CONFIG_STORAGECONFIG = JsonSerializer.Serialize(new LocalStorageConfig());
     }
 }
