@@ -1,4 +1,7 @@
 using EDR.Collector.lib.DynamicObjects.StorageTypes;
+using static EDR.Collector.lib.DynamicObjects.StorageTypes.LocalStorage;
+
+using System.Text.Json;
 
 namespace EDR.Collector.UnitTest.lib.StorageTypes
 {
@@ -23,6 +26,16 @@ namespace EDR.Collector.UnitTest.lib.StorageTypes
             var result = localStorage.Initialize("BabyYaga");
 
             Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void ValidInputButEmptyFilenameCheck()
+        {
+            var localStorage = new LocalStorage();
+
+            var result = localStorage.Initialize(JsonSerializer.Serialize(new LocalStorageConfig()));
+
+            Assert.IsTrue(result);
         }
     }
 }
