@@ -39,17 +39,37 @@ namespace EDR.Collector.UnitTest.lib.StorageTypes
         }
 
         [TestMethod]
-        public void ValidInput()
+        public void ValidInputAndExistingFile()
         {
             var localStorage = new LocalStorage();
 
-            var config = new LocalStorageConfig();
-
-            config.FilePath = Path.Combine(AppContext.BaseDirectory, "config.json");
+            var config = new LocalStorageConfig
+            {
+                FilePath = Path.Combine(AppContext.BaseDirectory, "config.json")
+            };
 
             var json = JsonSerializer.Serialize(config);
 
             File.WriteAllText(config.FilePath, json);
+
+            var result = localStorage.Initialize(json);
+
+            Assert.IsTrue(result);
+
+            File.Delete(config.FilePath);
+        }
+
+        [TestMethod]
+        public void ValidInputAndNonExistingFile()
+        {
+            var localStorage = new LocalStorage();
+
+            var config = new LocalStorageConfig
+            {
+                FilePath = Path.Combine(AppContext.BaseDirectory, "config.json")
+            };
+
+            var json = JsonSerializer.Serialize(config);
 
             var result = localStorage.Initialize(json);
 
