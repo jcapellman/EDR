@@ -37,5 +37,23 @@ namespace EDR.Collector.UnitTest.lib.StorageTypes
 
             Assert.IsTrue(result);
         }
+
+        [TestMethod]
+        public void ValidInput()
+        {
+            var localStorage = new LocalStorage();
+
+            var config = new LocalStorageConfig();
+
+            config.FilePath = Path.Combine(AppContext.BaseDirectory, "config.json");
+
+            var json = JsonSerializer.Serialize(config);
+
+            File.WriteAllText(config.FilePath, json);
+
+            var result = localStorage.Initialize(json);
+
+            Assert.IsTrue(result);
+        }
     }
 }
