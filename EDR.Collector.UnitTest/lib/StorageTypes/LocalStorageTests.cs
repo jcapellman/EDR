@@ -75,5 +75,28 @@ namespace EDR.Collector.UnitTest.lib.StorageTypes
 
             Assert.IsTrue(result);
         }
+
+        [TestMethod]
+        public async Task StoreTestAsync()
+        {
+            var localStorage = new LocalStorage();
+
+            var config = new LocalStorageConfig
+            {
+                FilePath = AppContext.BaseDirectory
+            };
+
+            var json = JsonSerializer.Serialize(config);
+
+            var result = localStorage.Initialize(json);
+
+            Assert.IsTrue(result);
+
+            Assert.IsTrue(localStorage.Name.Equals(nameof(LocalStorage)));
+
+            result = await localStorage.StoreEventAsync("Testo");
+
+            Assert.IsTrue(result);
+        }
     }
 }
