@@ -23,7 +23,19 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
 
         static readonly ReaderWriterLock locker = new();
 
-        private string CurrentFileName => Path.Combine(_config.FilePath, $"{DateTime.Today.ToString("MM_dd_yyyy")}.log");
+        private string CurrentFileName => Path.Combine(_config.FilePath, $"{Environment.MachineName.ToLower()}_{DateTime.Today:MM_dd_yyyy}.log");
+
+        private void ValidatePath()
+        {
+            if (Directory.Exists(_config.FilePath))
+            {
+                return;
+            }
+            
+            Directory.CreateDirectory(_config.FilePath);
+
+            logger.Debug($"{_config.FilePath} did not exist, but was created");
+        }
 
         public override bool Initialize(string configStr)
         {
@@ -32,6 +44,8 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
                 logger.Debug("LocalStorage::Initialize - configStr parameter was null");
 
                 _config = new LocalStorageConfig();
+
+                ValidatePath();
 
                 return true;
             }
@@ -50,6 +64,8 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
                 }
 
                 _config = result;
+
+                ValidatePath();
 
                 return true;
             } catch (JsonException jex)

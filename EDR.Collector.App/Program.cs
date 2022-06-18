@@ -15,7 +15,11 @@ namespace EDR.Collector.App
                 mreShutdown.Set();
             };
 
+            Console.WriteLine("EDR Collector starting...");
+
             collector.Start();
+
+            Console.WriteLine("EDR Collector running... (Control + C to stop)");
 
             mreShutdown.WaitOne();
 

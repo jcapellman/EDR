@@ -2,6 +2,8 @@
 using Amazon.S3.Model;
 
 using EDR.Collector.lib.DynamicObjects.StorageTypes.Base;
+using System.Text.Json;
+using static EDR.Collector.lib.DynamicObjects.StorageTypes.LocalStorage;
 
 namespace EDR.Collector.lib.DynamicObjects.StorageTypes
 {
@@ -35,7 +37,15 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
 
         private AWSConfig _config = new();
 
+        private readonly LocalStorage _localStorage = new();
+
+        private readonly string AWSLogPath = Path.Combine(AppContext.BaseDirectory, "AWSLogs");
+
+        private readonly string AWSLogArchivePath = Path.Combine(AppContext.BaseDirectory, "AWSLogArchive");
+
         public override string Name => "AWS S3";
+
+        private readonly System.Timers.Timer _timerUpload = new(60000);
 
         public override bool Initialize(string configStr)
         {
@@ -48,24 +58,74 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
 
             _config = result;
 
+            _localStorage.Initialize(JsonSerializer.Serialize(new LocalStorageConfig { FilePath = AWSLogPath }));
+
+            if (!Directory.Exists(AWSLogPath))
+            {
+                Directory.CreateDirectory(AWSLogPath);
+            }
+
+            if (!Directory.Exists(AWSLogArchivePath))
+            {
+                Directory.CreateDirectory(AWSLogArchivePath);
+            }
+
+            // Configure the Timer
+            _timerUpload.Elapsed += _timerUpload_Elapsed;
+            _timerUpload.AutoReset = true;
+            _timerUpload.Enabled = true;
+
+            _timerUpload.Start();
+
             return true;
         }
 
-        public override async Task<bool> StoreEventAsync(string output)
+        private async void _timerUpload_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
-            var client = new AmazonS3Client(_config.IAMUser, _config.IAMSecret, Amazon.RegionEndpoint.USEast2);
+            var files = Directory.GetFiles(AWSLogPath).Where(a => !a.Contains($"{DateTime.Today:MM_dd_yyyy}.log")).ToArray();
 
-            PutObjectRequest putRequest = new()
+            if (files.Length == 0)
             {
-                BucketName = _config.BucketName,
-                Key = $"{Environment.MachineName}_{DateTime.Now.Date.ToShortDateString}",
-                FilePath = _config.FilePath,
-                ContentType = "text/plain"
-            };
+                return;
+            }
 
-            PutObjectResponse response = await client.PutObjectAsync(putRequest);
+            _timerUpload.Enabled = false;
 
-            return response.HttpStatusCode == System.Net.HttpStatusCode.OK;
+            try
+            {
+                var client = new AmazonS3Client(_config.IAMUser, _config.IAMSecret, Amazon.RegionEndpoint.USEast2);
+
+                foreach (var file in files)
+                {
+                    PutObjectRequest putRequest = new()
+                    {
+                        BucketName = _config.BucketName,
+                        Key = $"{Environment.MachineName}_{DateTime.Now.Date.ToShortDateString}",
+                        FilePath = file,
+                        ContentType = "text/plain"
+                    };
+
+                    PutObjectResponse response = await client.PutObjectAsync(putRequest);
+
+                    if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
+                    {
+                        Console.WriteLine($"Failed to upload {file}, status code: {response.HttpStatusCode}");
+                    }
+                    else
+                    {
+                        var fileInfo = new FileInfo(file);
+
+                        File.Move(file, Path.Combine(AWSLogArchivePath, fileInfo.Name));
+                    }
+                }
+            } catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
+            _timerUpload.Enabled = true;
         }
+
+        public override async Task<bool> StoreEventAsync(string output) => await _localStorage.StoreEventAsync(output);
     }
 }
