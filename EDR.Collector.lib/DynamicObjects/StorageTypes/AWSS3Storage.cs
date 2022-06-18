@@ -3,36 +3,34 @@ using Amazon.S3.Model;
 
 using EDR.Collector.lib.DynamicObjects.StorageTypes.Base;
 
-using System.Text.Json;
-using System.Text.Json.Serialization;
-
 namespace EDR.Collector.lib.DynamicObjects.StorageTypes
 {
     public class AWSS3Storage : BaseStorageType
     {
         public class AWSConfig
         {
-            public Amazon.RegionEndpoint Region { get; set; }
+            public string Region { get; set; }
 
             public string BucketName { get; set; }
 
-            public string Key { get; set; }
-
             public string FilePath { get; set; }
+
+            public string IAMUser { get; set; }
+
+            public string IAMSecret { get; set; }
 
             public AWSConfig()
             {
-                Region = Amazon.RegionEndpoint.USEast1;
+                Region = Amazon.RegionEndpoint.USEast2.ToString();
+
+                IAMUser = string.Empty;
+
+                IAMSecret = string.Empty;
 
                 BucketName = string.Empty;
 
-                Key = string.Empty;
-
                 FilePath = string.Empty;
             }
-
-            [JsonConstructor]
-            public AWSConfig(Amazon.RegionEndpoint region, string bucketName, string key, string filePath) => (Region, BucketName, Key, FilePath) = (region, bucketName, key, filePath);
         }
 
         private AWSConfig _config = new();
@@ -55,12 +53,12 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
 
         public override async Task<bool> StoreEventAsync(string output)
         {
-            var client = new AmazonS3Client(_config.Region);
+            var client = new AmazonS3Client(_config.IAMUser, _config.IAMSecret, Amazon.RegionEndpoint.USEast2);
 
             PutObjectRequest putRequest = new()
             {
                 BucketName = _config.BucketName,
-                Key = _config.Key,
+                Key = $"{Environment.MachineName}_{DateTime.Now.Date.ToShortDateString}",
                 FilePath = _config.FilePath,
                 ContentType = "text/plain"
             };
