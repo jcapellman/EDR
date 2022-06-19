@@ -13,5 +13,27 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes.Base
         public abstract Task<bool> StoreEventAsync(string output);
 
         protected static T? ParseJSON<T>(string jsonStr) => JsonSerializer.Deserialize<T>(jsonStr);
+
+        protected static bool ValidateDirectoryPath(string path)
+        {
+            if (Directory.Exists(path))
+            {
+                return true;
+            }
+
+            try
+            {
+                Directory.CreateDirectory(path);
+
+                logger.Debug($"Directories in path ({path}) did not exist, but was created successfully");
+            } catch (UnauthorizedAccessException uae)
+            {
+                logger.Error($"Failed to create path ({path}) due to a Unauthorized Access Exception ({uae})");
+
+                return false;
+            }
+
+            return true;
+        }
     }
 }
