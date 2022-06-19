@@ -6,6 +6,8 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes.Base
 {
     public abstract class BaseStorageType : BaseDynamicObject
     {
+        protected static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+
         public abstract bool Initialize(string configStr);
 
         public abstract Task<bool> StoreEventAsync(string output);
