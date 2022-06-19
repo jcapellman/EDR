@@ -15,8 +15,6 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
             }
         }
 
-        private static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
-
         private LocalStorageConfig _config = new();
 
         public override string Name => "LocalStorage";
@@ -24,18 +22,6 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
         static readonly ReaderWriterLock locker = new();
 
         private string CurrentFileName => Path.Combine(_config.FilePath, $"{Environment.MachineName.ToLower()}_{DateTime.Today:MM_dd_yyyy}.log");
-
-        private void ValidatePath()
-        {
-            if (Directory.Exists(_config.FilePath))
-            {
-                return;
-            }
-            
-            Directory.CreateDirectory(_config.FilePath);
-
-            logger.Debug($"{_config.FilePath} did not exist, but was created");
-        }
 
         public override bool Initialize(string configStr)
         {
@@ -45,7 +31,7 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
 
                 _config = new LocalStorageConfig();
 
-                ValidatePath();
+                ValidateDirectoryPath(_config.FilePath);
 
                 return true;
             }
@@ -65,7 +51,7 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
 
                 _config = result;
 
-                ValidatePath();
+                ValidateDirectoryPath(_config.FilePath);
 
                 return true;
             } catch (JsonException jex)
