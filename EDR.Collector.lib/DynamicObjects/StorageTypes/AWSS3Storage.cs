@@ -53,6 +53,8 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
 
             if (result == null)
             {
+                logger.Error($"Initialization of {nameof(AWSS3Storage)} failed due to bad config json ({configStr})");
+
                 return false;
             }
 
@@ -60,15 +62,8 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
 
             _localStorage.Initialize(JsonSerializer.Serialize(new LocalStorageConfig { FilePath = AWSLogPath }));
 
-            if (!Directory.Exists(AWSLogPath))
-            {
-                Directory.CreateDirectory(AWSLogPath);
-            }
-
-            if (!Directory.Exists(AWSLogArchivePath))
-            {
-                Directory.CreateDirectory(AWSLogArchivePath);
-            }
+            ValidateDirectoryPath(AWSLogPath);
+            ValidateDirectoryPath(AWSLogArchivePath);
 
             // Configure the Timer
             _timerUpload.Elapsed += _timerUpload_Elapsed;
