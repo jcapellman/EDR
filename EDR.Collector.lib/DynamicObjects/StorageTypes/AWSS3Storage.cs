@@ -92,10 +92,12 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
 
                 foreach (var file in files)
                 {
+                    var fileInfo = new FileInfo(file);
+
                     PutObjectRequest putRequest = new()
                     {
                         BucketName = _config.BucketName,
-                        Key = $"{Environment.MachineName}_{DateTime.Now.Date.ToShortDateString}",
+                        Key = fileInfo.Name,
                         FilePath = file,
                         ContentType = "text/plain"
                     };
@@ -108,8 +110,6 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
                     }
                     else
                     {
-                        var fileInfo = new FileInfo(file);
-
                         File.Move(file, Path.Combine(AWSLogArchivePath, fileInfo.Name));
                     }
                 }
