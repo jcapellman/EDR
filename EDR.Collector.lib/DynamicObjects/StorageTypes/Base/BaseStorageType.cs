@@ -16,7 +16,7 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes.Base
 
         protected static bool ValidateDirectoryPath(string path)
         {
-            if (Directory.Exists(path))
+            if (Path.Exists(path))
             {
                 return true;
             }

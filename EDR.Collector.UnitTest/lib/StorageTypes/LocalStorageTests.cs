@@ -8,6 +8,11 @@ namespace EDR.Collector.UnitTest.lib.StorageTypes
     [TestClass]
     public class LocalStorageTests
     {
+        private static LocalStorageConfig CreateTempPath(string functionName) => new LocalStorageConfig
+        {
+            FilePath = Path.Combine(Directory.CreateTempSubdirectory(functionName).FullName, "config.json")
+        };
+
         [TestMethod]
         public void EmptyCheck()
         {
@@ -43,10 +48,7 @@ namespace EDR.Collector.UnitTest.lib.StorageTypes
         {
             var localStorage = new LocalStorage();
 
-            var config = new LocalStorageConfig
-            {
-                FilePath = Path.Combine(AppContext.BaseDirectory, "config.json")
-            };
+            var config = CreateTempPath("ValidInputAndExistingFile");
 
             var json = JsonSerializer.Serialize(config);
 
@@ -64,10 +66,7 @@ namespace EDR.Collector.UnitTest.lib.StorageTypes
         {
             var localStorage = new LocalStorage();
 
-            var config = new LocalStorageConfig
-            {
-                FilePath = Path.Combine(AppContext.BaseDirectory, "config.json")
-            };
+            var config = CreateTempPath("ValidInputAndNonExistingFile");
 
             var json = JsonSerializer.Serialize(config);
 
