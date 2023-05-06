@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.S3" Version="3.7.104.9" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.104.10" />
     <PackageReference Include="NLog" Version="5.1.4" />
     <PackageReference Include="WET.lib" Version="0.9.4" />
   </ItemGroup>
