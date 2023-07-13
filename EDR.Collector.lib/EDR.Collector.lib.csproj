@@ -15,8 +15,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.S3" Version="3.7.104.11" />
-    <PackageReference Include="NLog" Version="5.1.4" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.107.5" />
+    <PackageReference Include="NLog" Version="5.2.2" />
     <PackageReference Include="WET.lib" Version="0.9.4" />
   </ItemGroup>
 
