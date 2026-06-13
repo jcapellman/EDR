@@ -5,6 +5,9 @@ using System.Text.Json;
 
 namespace EDR.Collector.lib.Helpers
 {
+    /// <summary>
+    /// Helper class for loading and parsing configuration files.
+    /// </summary>
     public static class ConfigParser
     {
         private static Config CreateDefaultConfigFile(string fileName = Constants.DEFAULT_CONFIG_FILENAME)
@@ -43,6 +46,12 @@ namespace EDR.Collector.lib.Helpers
             return config;
         }
 
+        /// <summary>
+        /// Load configuration from file.
+        /// Creates a default configuration file if it doesn't exist.
+        /// </summary>
+        /// <param name="fileName">Configuration file name (default: config.json)</param>
+        /// <returns>Configuration object</returns>
         public static Config LoadConfig(string? fileName = null)
         {
             if (string.IsNullOrEmpty(fileName))

@@ -16,7 +16,7 @@ namespace EDR.Collector.UnitTest.lib.StorageTypes
         [TestMethod]
         public void EmptyCheck()
         {
-            var localStorage = new LocalStorage();
+            using var localStorage = new LocalStorage();
 
             var result = localStorage.Initialize("");
 
@@ -26,7 +26,7 @@ namespace EDR.Collector.UnitTest.lib.StorageTypes
         [TestMethod]
         public void GarbageInputCheck()
         {
-            var localStorage = new LocalStorage();
+            using var localStorage = new LocalStorage();
 
             var result = localStorage.Initialize("BabyYaga");
 
@@ -36,7 +36,7 @@ namespace EDR.Collector.UnitTest.lib.StorageTypes
         [TestMethod]
         public void ValidInputButEmptyFilenameCheck()
         {
-            var localStorage = new LocalStorage();
+            using var localStorage = new LocalStorage();
 
             var result = localStorage.Initialize(JsonSerializer.Serialize(new LocalStorageConfig()));
 
@@ -46,7 +46,7 @@ namespace EDR.Collector.UnitTest.lib.StorageTypes
         [TestMethod]
         public void ValidInputAndExistingFile()
         {
-            var localStorage = new LocalStorage();
+            using var localStorage = new LocalStorage();
 
             var config = CreateTempPath("ValidInputAndExistingFile");
 
@@ -64,7 +64,7 @@ namespace EDR.Collector.UnitTest.lib.StorageTypes
         [TestMethod]
         public void ValidInputAndNonExistingFile()
         {
-            var localStorage = new LocalStorage();
+            using var localStorage = new LocalStorage();
 
             var config = CreateTempPath("ValidInputAndNonExistingFile");
 
@@ -78,7 +78,7 @@ namespace EDR.Collector.UnitTest.lib.StorageTypes
         [TestMethod]
         public async Task StoreTestAsync()
         {
-            var localStorage = new LocalStorage();
+            using var localStorage = new LocalStorage();
 
             var config = new LocalStorageConfig
             {

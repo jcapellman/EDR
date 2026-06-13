@@ -7,16 +7,24 @@ namespace EDR.Collector.UnitTest.lib
     {
         [Ignore("Until env can be replicated")]
         [TestMethod]
-        [ExpectedException(typeof(UnauthorizedAccessException))]
         public void EmptyConstructorTest()
         {
-            var runner = new CollectorRunner();
+            try
+            {
+                using var runner = new CollectorRunner();
 
-            runner.Start();
+                runner.Start();
 
-            Task.Delay(500);
+                Task.Delay(500).Wait();
 
-            runner.Stop();
+                runner.Stop();
+
+                Assert.Fail("Expected UnauthorizedAccessException was not thrown");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // Expected exception
+            }
         }
     }
 }

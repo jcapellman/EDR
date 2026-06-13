@@ -1,5 +1,6 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
+using Amazon;
 
 using EDR.Collector.lib.DynamicObjects.StorageTypes.Base;
 using System.Text.Json;
@@ -7,23 +8,50 @@ using static EDR.Collector.lib.DynamicObjects.StorageTypes.LocalStorage;
 
 namespace EDR.Collector.lib.DynamicObjects.StorageTypes
 {
+    /// <summary>
+    /// AWS S3 storage implementation for EDR events.
+    /// Buffers events locally then uploads to S3 on a timer.
+    /// </summary>
     public class AWSS3Storage : BaseStorageType
     {
+        /// <summary>
+        /// Configuration for AWS S3 storage.
+        /// </summary>
         public class AWSConfig
         {
+            /// <summary>
+            /// AWS region endpoint (e.g., us-east-2).
+            /// </summary>
             public string Region { get; set; }
 
+            /// <summary>
+            /// S3 bucket name for storing logs.
+            /// </summary>
             public string BucketName { get; set; }
 
+            /// <summary>
+            /// Local file path for buffering before upload.
+            /// </summary>
             public string FilePath { get; set; }
 
+            /// <summary>
+            /// AWS IAM user access key.
+            /// </summary>
             public string IAMUser { get; set; }
 
+            /// <summary>
+            /// AWS IAM user secret key.
+            /// </summary>
             public string IAMSecret { get; set; }
+
+            /// <summary>
+            /// Upload interval in milliseconds (default: 60000 = 1 minute).
+            /// </summary>
+            public int UploadIntervalMs { get; set; }
 
             public AWSConfig()
             {
-                Region = Amazon.RegionEndpoint.USEast2.ToString();
+                Region = RegionEndpoint.USEast2.SystemName;
 
                 IAMUser = string.Empty;
 
@@ -32,12 +60,14 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
                 BucketName = string.Empty;
 
                 FilePath = string.Empty;
+
+                UploadIntervalMs = 60000;
             }
         }
 
         private AWSConfig _config = new();
 
-        private readonly LocalStorage _localStorage = new();
+        private LocalStorage? _localStorage;
 
         private readonly string AWSLogPath = Path.Combine(AppContext.BaseDirectory, "AWSLogs");
 
@@ -45,7 +75,7 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
 
         public override string Name => "AWS S3";
 
-        private readonly System.Timers.Timer _timerUpload = new(60000);
+        private System.Timers.Timer? _timerUpload;
 
         public override bool Initialize(string configStr)
         {
@@ -60,17 +90,20 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
 
             _config = result;
 
+            _localStorage = new LocalStorage();
             _localStorage.Initialize(JsonSerializer.Serialize(new LocalStorageConfig { FilePath = AWSLogPath }));
 
             ValidateDirectoryPath(AWSLogPath);
             ValidateDirectoryPath(AWSLogArchivePath);
 
-            // Configure the Timer
+            _timerUpload = new System.Timers.Timer(_config.UploadIntervalMs);
             _timerUpload.Elapsed += _timerUpload_Elapsed;
             _timerUpload.AutoReset = true;
             _timerUpload.Enabled = true;
 
             _timerUpload.Start();
+
+            logger.Debug($"AWSS3Storage initialized with region {_config.Region}, upload interval {_config.UploadIntervalMs}ms");
 
             return true;
         }
@@ -84,11 +117,17 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
                 return;
             }
 
+            if (_timerUpload == null)
+            {
+                return;
+            }
+
             _timerUpload.Enabled = false;
 
             try
             {
-                var client = new AmazonS3Client(_config.IAMUser, _config.IAMSecret, Amazon.RegionEndpoint.USEast2);
+                var region = RegionEndpoint.GetBySystemName(_config.Region);
+                using var client = new AmazonS3Client(_config.IAMUser, _config.IAMSecret, region);
 
                 foreach (var file in files)
                 {
@@ -106,21 +145,53 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
 
                     if (response.HttpStatusCode != System.Net.HttpStatusCode.OK)
                     {
-                        Console.WriteLine($"Failed to upload {file}, status code: {response.HttpStatusCode}");
+                        logger.Error($"Failed to upload {file}, status code: {response.HttpStatusCode}");
                     }
                     else
                     {
-                        File.Move(file, Path.Combine(AWSLogArchivePath, fileInfo.Name));
+                        var archivePath = Path.Combine(AWSLogArchivePath, fileInfo.Name);
+                        File.Move(file, archivePath, overwrite: true);
+                        logger.Debug($"Successfully uploaded and archived {fileInfo.Name}");
                     }
                 }
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                logger.Error(ex, $"Error during S3 upload: {ex.Message}");
             }
 
-            _timerUpload.Enabled = true;
+            if (_timerUpload != null)
+            {
+                _timerUpload.Enabled = true;
+            }
         }
 
-        public override async Task<bool> StoreEventAsync(string output) => await _localStorage.StoreEventAsync(output);
+        public override async Task<bool> StoreEventAsync(string output)
+        {
+            if (_localStorage == null)
+            {
+                logger.Error("LocalStorage is not initialized");
+                return false;
+            }
+
+            return await _localStorage.StoreEventAsync(output);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (_timerUpload != null)
+                {
+                    _timerUpload.Stop();
+                    _timerUpload.Elapsed -= _timerUpload_Elapsed;
+                    _timerUpload.Dispose();
+                    _timerUpload = null;
+                }
+
+                _localStorage?.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }

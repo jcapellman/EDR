@@ -6,11 +6,11 @@ namespace EDR.Collector.App
     {
         static void Main()
         {
-            ManualResetEvent mreShutdown = new(false);
+            using var mreShutdown = new ManualResetEvent(false);
+            using var collector = new CollectorRunner();
 
-            var collector = new CollectorRunner();
-
-            Console.CancelKeyPress += (sender, eventArgs) => {
+            Console.CancelKeyPress += (sender, eventArgs) =>
+            {
                 eventArgs.Cancel = true;
                 mreShutdown.Set();
             };
@@ -23,7 +23,11 @@ namespace EDR.Collector.App
 
             mreShutdown.WaitOne();
 
+            Console.WriteLine("EDR Collector stopping...");
+
             collector.Stop();
+
+            Console.WriteLine("EDR Collector stopped.");
         }
     }
 }

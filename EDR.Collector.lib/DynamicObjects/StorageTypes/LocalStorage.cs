@@ -3,10 +3,20 @@ using System.Text.Json;
 
 namespace EDR.Collector.lib.DynamicObjects.StorageTypes
 {
+    /// <summary>
+    /// Local file system storage implementation for EDR events.
+    /// Stores events in daily log files named by machine and date.
+    /// </summary>
     public class LocalStorage : BaseStorageType
     {
+        /// <summary>
+        /// Configuration for local storage.
+        /// </summary>
         public class LocalStorageConfig
         {
+            /// <summary>
+            /// Directory path where log files will be stored.
+            /// </summary>
             public string FilePath { get; set; }
 
             public LocalStorageConfig()
@@ -16,10 +26,9 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
         }
 
         private LocalStorageConfig _config = new();
+        private readonly ReaderWriterLockSlim _locker = new();
 
         public override string Name => "LocalStorage";
-
-        static readonly ReaderWriterLock locker = new();
 
         private string CurrentFileName => Path.Combine(_config.FilePath, $"{Environment.MachineName.ToLower()}_{DateTime.Today:MM_dd_yyyy}.log");
 
@@ -54,7 +63,8 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
                 ValidateDirectoryPath(_config.FilePath);
 
                 return true;
-            } catch (JsonException jex)
+            }
+            catch (JsonException jex)
             {
                 logger.Error($"LocalStorage::Initialize: Failed to parse {configStr} with exception: {jex}");
 
@@ -64,14 +74,28 @@ namespace EDR.Collector.lib.DynamicObjects.StorageTypes
 
         public override Task<bool> StoreEventAsync(string output)
         {
-            lock (locker)
+            _locker.EnterWriteLock();
+            try
             {
                 logger.Debug($"LocalStorage::StoreEventAsync - {output}");
 
-                File.AppendAllText(CurrentFileName, output + System.Environment.NewLine);
-            }
+                File.AppendAllText(CurrentFileName, output + Environment.NewLine);
 
-            return Task.FromResult(true);
+                return Task.FromResult(true);
+            }
+            finally
+            {
+                _locker.ExitWriteLock();
+            }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _locker?.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }
