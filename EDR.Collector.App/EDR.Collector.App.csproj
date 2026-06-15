@@ -29,7 +29,7 @@
   <ItemGroup>
 
     <PackageReference Include="Microsoft.NET.ILLink.Analyzers" Version="8.0.100-1.23067.1" />
-    <PackageReference Include="Microsoft.NET.ILLink.Tasks" Version="8.0.0" />
+    <PackageReference Include="Microsoft.NET.ILLink.Tasks" Version="10.0.9" />
     <None Update="nlog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
